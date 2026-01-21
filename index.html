@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <title>Digital Investigation Simulation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Georgia:serif&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #f1f5f9;
+        }
+
+        .news-headline {
+            font-family: 'Georgia', serif;
+            font-weight: 700;
+            line-height: 1.25;
+        }
+
+        .viral-tag {
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            color: white;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: inline-block;
+            border-radius: 4px;
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Scrollbar aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col sm:flex-row items-center justify-between h-auto sm:h-16 py-3 sm:py-0 gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-600 p-2 rounded-lg">
+                        <i data-lucide="shield-alert" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg leading-none tracking-wide">DIGITAL INVESTIGATION</h1>
+                        <span class="text-xs text-slate-400 font-mono uppercase tracking-wider">Simulation Unit</span>
+                    </div>
+                </div>
+                
+                <nav class="flex bg-slate-800 p-1 rounded-lg">
+                    <button onclick="changeGrade('6')" id="nav-grade-6" class="px-4 py-1.5 rounded-md text-sm font-medium transition-all text-slate-300 hover:text-white hover:bg-slate-700">Grade 6</button>
+                    <button onclick="changeGrade('7')" id="nav-grade-7" class="px-4 py-1.5 rounded-md text-sm font-medium transition-all text-slate-300 hover:text-white hover:bg-slate-700">Grade 7</button>
+                    <button onclick="changeGrade('8')" id="nav-grade-8" class="px-4 py-1.5 rounded-md text-sm font-medium transition-all text-slate-300 hover:text-white hover:bg-slate-700">Grade 8</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+        <!-- View: Grade Dashboard (List of Scenarios + Mission Info) -->
+        <div id="view-dashboard" class="fade-in">
+            <!-- Mission Info Hero -->
+            <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
+                <div class="bg-slate-50 border-b border-slate-100 px-6 py-4 flex items-center gap-2">
+                    <i data-lucide="target" class="text-blue-600 w-5 h-5"></i>
+                    <h2 id="mission-title" class="font-bold text-slate-800">Mission Briefing</h2>
+                </div>
+                <div class="p-6 md:flex gap-8 items-start">
+                    <div class="flex-grow prose prose-slate max-w-none text-slate-600" id="mission-content">
+                        <!-- Injected Content -->
+                    </div>
+                    <div class="hidden md:block shrink-0 bg-blue-50 p-4 rounded-xl border border-blue-100 w-64">
+                        <h3 class="text-blue-800 font-bold text-xs uppercase tracking-wider mb-2">Investigator Tip</h3>
+                        <p class="text-sm text-blue-700">Always verify before you trust. The scenarios below test the skills outlined in this mission.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scenario Grid -->
+            <div class="mb-4 flex items-center justify-between">
+                <h3 class="text-xl font-bold text-slate-800">Available Scenarios</h3>
+                <span class="text-xs font-mono bg-slate-200 text-slate-600 px-2 py-1 rounded">Select one to begin</span>
+            </div>
+
+            <div id="scenario-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cards injected here -->
+            </div>
+        </div>
+
+        <!-- View: Scenario Detail -->
+        <div id="view-detail" class="hidden">
+            <button onclick="showDashboard()" class="mb-6 flex items-center gap-2 text-slate-500 hover:text-blue-600 transition-colors font-medium">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                Back to Mission Dashboard
+            </button>
+
+            <div class="grid lg:grid-cols-3 gap-8">
+                
+                <!-- Left: The News Card -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+                        <!-- Browser Header Mockup -->
+                        <div class="bg-slate-100 border-b border-slate-200 px-4 py-2 flex items-center gap-2">
+                            <div class="flex gap-1.5">
+                                <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-amber-400"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+                            </div>
+                            <div class="flex-grow mx-4 bg-white rounded border border-slate-300 px-3 py-1 text-xs text-slate-400 font-mono truncate flex items-center">
+                                <i data-lucide="lock" class="w-3 h-3 mr-1.5 opacity-50"></i>
+                                <span id="detail-url-mock">https://www.news-source.com/article/view</span>
+                            </div>
+                        </div>
+
+                        <!-- Image Section -->
+                        <div class="relative bg-slate-900 group aspect-video flex items-center justify-center overflow-hidden">
+                            <img id="detail-image" src="" alt="News Image" class="w-full h-full object-contain">
+                            <div class="absolute bottom-4 left-4">
+                                <span class="viral-tag shadow-lg">Trending</span>
+                            </div>
+                        </div>
+
+                        <!-- Content Section -->
+                        <div class="p-6 sm:p-8">
+                            <div class="flex items-center gap-2 text-slate-500 text-xs font-bold uppercase tracking-wider mb-4">
+                                <i data-lucide="globe" class="w-3 h-3 text-blue-500"></i>
+                                <span id="detail-source">Source Name</span>
+                                <span class="text-slate-300">•</span>
+                                <span id="detail-time">2 hrs ago</span>
+                            </div>
+
+                            <h1 id="detail-headline" class="news-headline text-2xl sm:text-3xl text-slate-900 mb-6">Headline Goes Here</h1>
+
+                            <div class="relative pl-6 border-l-4 border-blue-200">
+                                <p id="detail-desc" class="text-lg text-slate-600 italic leading-relaxed">Description text...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: The Mission Task -->
+                <div class="lg:col-span-1 space-y-6">
+                    <!-- Task Card -->
+                    <div class="bg-slate-800 text-white rounded-xl shadow-lg overflow-hidden sticky top-24">
+                        <div class="bg-blue-600 p-4 flex items-center gap-3">
+                            <div class="bg-white/20 p-1.5 rounded-lg">
+                                <i data-lucide="clipboard-list" class="w-5 h-5 text-white"></i>
+                            </div>
+                            <h3 class="font-bold tracking-wide text-sm uppercase">Your Assignment</h3>
+                        </div>
+
+                        <div class="p-6 space-y-6">
+                            <div>
+                                <h4 class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Step 1: Investigate</h4>
+                                <p id="detail-task" class="text-lg font-medium leading-snug">Task instruction goes here.</p>
+                            </div>
+
+                            <div class="bg-slate-700/50 rounded-lg p-4 border border-slate-600">
+                                <h4 class="text-blue-400 text-xs font-bold uppercase tracking-wider mb-2">Step 2: Verify</h4>
+                                <p id="detail-subtext" class="text-slate-300 text-sm font-mono">Subtext hint goes here.</p>
+                            </div>
+
+                            <div class="pt-4 border-t border-slate-700">
+                                <button id="copy-btn" class="w-full bg-white text-slate-900 hover:bg-blue-50 font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors">
+                                    <i data-lucide="copy" class="w-4 h-4"></i>
+                                    Copy Headline
+                                </button>
+                                <div id="copy-reminder" class="hidden w-full bg-slate-700/50 p-4 rounded-lg border border-slate-600 text-center">
+                                    <div class="flex justify-center gap-4 mb-2">
+                                        <div class="flex flex-col items-center">
+                                            <div class="bg-white/10 p-2 rounded-lg mb-1"><i data-lucide="copy" class="w-5 h-5 text-blue-300"></i></div>
+                                            <span class="text-xs text-slate-400 font-mono">CTRL+C</span>
+                                        </div>
+                                         <div class="flex flex-col items-center">
+                                            <div class="bg-white/10 p-2 rounded-lg mb-1"><i data-lucide="clipboard" class="w-5 h-5 text-blue-300"></i></div>
+                                             <span class="text-xs text-slate-400 font-mono">CTRL+V</span>
+                                        </div>
+                                    </div>
+                                    <p class="text-sm font-bold text-blue-200">Copy & Paste the Headline</p>
+                                </div>
+                                <button id="keywords-btn" class="hidden mt-4 w-full bg-slate-700 text-blue-200 hover:bg-slate-600 hover:text-white font-medium py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors border border-slate-600 text-sm" onclick="openModal()">
+                                    <i data-lucide="search" class="w-4 h-4"></i>
+                                    Finding Search Terms
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal: Finding Search Terms -->
+    <div id="modal-keywords" class="hidden fixed inset-0 z-[60] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeModal()"></div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div class="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <i data-lucide="search" class="h-6 w-6 text-blue-600"></i>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Finding Search Terms</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500 mb-4">
+                                    You want to develop a broad understanding of your topic while cross referencing information.
+                                </p>
+                                <p class="text-sm font-bold text-gray-700 mb-2">This is so that you can...</p>
+                                <ul class="list-disc list-inside text-sm text-gray-600 space-y-1">
+                                    <li>Sort and filter reliable information from misinformation</li>
+                                    <li>Develop targeted lists of search terms and concepts</li>
+                                    <li>Begin to understand nuances of your topic</li>
+                                    <li>Make it easier to find reputable and vetted sources</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm" onclick="closeModal()">
+                        Got it
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-white border-t border-slate-200 mt-12 py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-slate-400 text-sm">
+            <p>&copy; Digital Investigation Simulation Unit. Designed for Educational Use.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- DATA ---
+        const gradeInfoData = {
+            "6": {
+                title: "Grade 6 Mission: Shortcuts & Summaries",
+                content: `
+                    <p class="mb-2"><strong>Goal:</strong> Learn keyboard shortcuts, verify with AI summaries, and dig deeper into search results.</p>
+                    <ul class="list-disc list-inside space-y-1 text-sm">
+                        <li><strong>Keyboard Shortcuts:</strong> Use <code class="bg-slate-100 text-slate-700 px-1 rounded border border-slate-300">Ctrl+C</code> (Copy) and <code class="bg-slate-100 text-slate-700 px-1 rounded border border-slate-300">Ctrl+V</code> (Paste).</li>
+                        <li><strong>AI & Beyond:</strong> Acknowledge the AI summary, but <em>don't solely rely on it</em>.</li>
+                        <li><strong>Review Results:</strong> Look at "General Search Results" and click linked sources to verify.</li>
+                        <li><strong>Keywords:</strong> Determine other search terms to find reputable coverage.</li>
+                    </ul>
+                `
+            },
+            "7": {
+                title: "Grade 7 Mission: Focused Searching",
+                content: `
+                    <p class="mb-2"><strong>Goal:</strong> Use advanced search operators to filter for trusted sites.</p>
+                    <ul class="list-disc list-inside space-y-1 text-sm">
+                        <li><strong>The "site:" Operator:</strong> Type <code class="bg-slate-100 text-slate-700 px-1 rounded border border-slate-300">site:.gov</code> or <code class="bg-slate-100 text-slate-700 px-1 rounded border border-slate-300">site:.edu</code> after your search terms.</li>
+                        <li><strong>Why?</strong> This limits results to government or educational websites.</li>
+                        <li><strong>Lesson:</strong> Knowing <em>where</em> to look is as important as <em>what</em> to look for.</li>
+                    </ul>
+                `
+            },
+            "8": {
+                title: "Grade 8 Mission: Impact & Independence",
+                content: `
+                    <p class="mb-2"><strong>Goal:</strong> Analyze the harm of misinformation and create your own verification plan.</p>
+                    <ul class="list-disc list-inside space-y-1 text-sm">
+                        <li><strong>Harm Analysis:</strong> If this headline is false, who gets hurt?</li>
+                        <li><strong>Independent Search:</strong> You have no prompts. Decide which keywords and search methods are best.</li>
+                        <li><strong>Lesson:</strong> We share responsibility for the information we spread.</li>
+                    </ul>
+                `
+            }
+        };
+
+        const scenarioData = {
+            "6": [
+                {
+                    id: "6-1",
+                    title: "T-Rex Cloned",
+                    headline: "Genetics Breakthrough: Scientists Successfully Clone Baby T-Rex, Opening 'Park' in 2027",
+                    source: "Dino-Science-Now.net",
+                    time: "Viral",
+                    desc: "A Florida lab claims to have hatched the first dinosaur in 65 million years using DNA from a mosquito trapped in amber.",
+                    task: "Highlight and copy (Ctrl+C) this phrase: 'Scientists clone baby T-Rex Florida 2027'.",
+                    subtext: "Paste (Ctrl+V). Acknowledge the AI Summary, but also review general search results to confirm.",
+                    localFilename: "grade6_dino_clone.jpg"
+                },
+                {
+                    id: "6-2",
+                    title: "Homework Ban",
+                    headline: "Federal Law Update: Homework Illegal for Under-13s Starting Next Semester",
+                    source: "National-Education-News.org",
+                    time: "2 hrs ago",
+                    desc: "Citing 'stress levels,' the Department of Education has allegedly banned all take-home assignments for middle schoolers.",
+                    task: "Copy (Ctrl+C): 'Department of Education illegal homework ban'.",
+                    subtext: "Paste (Ctrl+V). Acknowledge the AI Summary, but also review general search results to confirm.",
+                    localFilename: "grade6_homework_ban.jpg"
+                },
+                {
+                    id: "6-3",
+                    title: "Invisibility Cloak",
+                    headline: "Future Tech: Scientists Are Developing a Real-Life 'Invisibility Cloak'",
+                    source: "Tech-Rumor-Mill.xyz",
+                    time: "Trending",
+                    desc: "Researchers are testing special materials that bend light to make objects disappear. It sounds like magic, but scientists are actually working on it.",
+                    task: "Copy (Ctrl+C): 'real invisibility cloak technology'.",
+                    subtext: "Paste (Ctrl+V). Acknowledge the AI Summary, but also review general search results to confirm.",
+                    localFilename: "grade6_invisible_cloak.jpg"
+                },
+                {
+                    id: "6-4",
+                    title: "The Venom Myth",
+                    headline: "Nature Fact: Daddy Longlegs Are Officially The Most Venomous Spiders on Earth",
+                    source: "Nature-Trivia-Daily.com",
+                    time: "Viral",
+                    desc: "You have probably heard this rumor, but this article claims it is scientifically proven: their venom is deadlier than a Cobra's, but their fangs are too short to bite humans.",
+                    task: "Copy (Ctrl+C): 'Daddy longlegs most poisonous spider myth'.",
+                    subtext: "Paste (Ctrl+V). Acknowledge the AI Summary, but also review general search results to confirm.",
+                    localFilename: "grade6_daddy_longlegs.jpg"
+                },
+                {
+                    id: "6-5",
+                    title: "Bubblegum Broccoli",
+                    headline: "Agriculture News: Farmers Create 'Bubblegum Flavored' Broccoli to Help Kids Eat Veggies",
+                    source: "Healthy-Eats-Viral.info",
+                    time: "4 hrs ago",
+                    desc: "Using CRISPR gene editing, a farm in California says they have removed the bitter taste and added a sugary gum flavor.",
+                    task: "Copy (Ctrl+C): 'Bubblegum flavored broccoli gene editing'.",
+                    subtext: "Paste (Ctrl+V). Acknowledge the AI Summary, but also review general search results to confirm.",
+                    localFilename: "grade6_candy_veg.jpg"
+                }
+            ],
+            "7": [
+                {
+                    id: "7-1",
+                    title: "Penny Cost (TRUE)",
+                    headline: "Economic Fact: It Costs the US Government More Than 1 Cent to Make a Penny",
+                    source: "Financial-Times-Daily",
+                    time: "Yesterday",
+                    desc: "Critics say we are losing money every time we mint a coin. Is this inflation math actually true?",
+                    task: "Use 'site:.gov' to verify this with the US Mint or Treasury.",
+                    subtext: "Sample Search: cost to produce a penny site:.gov",
+                    localFilename: "grade7_penny_cost.jpg"
+                },
+                {
+                    id: "7-2",
+                    title: "Octopus Hearts (TRUE)",
+                    headline: "Biology Weirdness: Octopuses Have Three Hearts and Blue Blood",
+                    source: "Ocean-Life-Facts",
+                    time: "Trending",
+                    desc: "It sounds like sci-fi, but this article claims the cephalopod anatomy is totally alien compared to humans.",
+                    task: "Use 'site:.edu' or 'site:.org' to find a zoo or aquarium that confirms this.",
+                    subtext: "Sample Search: octopus three hearts blue blood site:.edu",
+                    localFilename: "grade7_octopus.jpg"
+                },
+                {
+                    id: "7-3",
+                    title: "Knuckle Cracking (FALSE)",
+                    headline: "Health Warning: Cracking Your Knuckles Will Give You Arthritis",
+                    source: "Wellness-Myths-Daily.com",
+                    time: "Recurring",
+                    desc: "Your teachers and parents have said it for years: popping your fingers causes permanent joint damage. Is it true?",
+                    task: "Use 'site:.edu' (universities/hospitals) to find the medical consensus.",
+                    subtext: "Sample Search: does cracking knuckles cause arthritis site:.edu",
+                    localFilename: "grade7_knuckles.jpg"
+                },
+                {
+                    id: "7-4",
+                    title: "Great Wall Space (FALSE)",
+                    headline: "NASA Image: The Great Wall of China is the Only Man-Made Object Visible from the Moon",
+                    source: "Space-Facts-Online.net",
+                    time: "Viral",
+                    desc: "It is a point of pride in many textbooks, but astronauts have debated this for decades.",
+                    task: "Use 'site:.gov' to check NASA's official stance on this claim.",
+                    subtext: "Sample Search: Great Wall of China visible from moon site:.gov",
+                    localFilename: "grade7_great_wall.jpg"
+                },
+                {
+                    id: "7-5",
+                    title: "NASA Space Pen (FALSE)",
+                    headline: "History Viral: NASA Spent Millions on a 'Space Pen' While Russians Just Used Pencils",
+                    source: "Tech-History-Leaks.xyz",
+                    time: "Trending",
+                    desc: "This popular story claims NASA wasted taxpayer money on a pen that writes in zero-g, while Soviet cosmonauts simply used pencils.",
+                    task: "Use 'site:.gov' to find why NASA actually banned pencils (hint: fire/graphite dust).",
+                    subtext: "Sample Search: space pen vs pencil myth site:.gov",
+                    localFilename: "grade7_space_pen.jpg"
+                }
+            ],
+            "8": [
+                {
+                    id: "8-1",
+                    title: "Tap Water Zombie (FALSE)",
+                    headline: "CDC Emergency: 'Zombie Deer' Disease Now Transmissible to Humans via Tap Water",
+                    source: "Alert-USA-News.xyz",
+                    time: "BREAKING",
+                    desc: "A report claims Chronic Wasting Disease (CWD) has mutated and entered the municipal water supply.",
+                    task: "1. Harm: If false, this causes panic buying and fear of water. 2. Verify: Is this true?",
+                    subtext: "Create your own search plan. Trusted sources only.",
+                    localFilename: "grade8_zombie_deer.jpg"
+                },
+                {
+                    id: "8-2",
+                    title: "Brain Changes (TRUE)",
+                    headline: "NIH Study: Excessive Screen Time Physically Changes the Structure of Pre-Teen Brains",
+                    source: "Health-Science-Today",
+                    time: "Recently",
+                    desc: "Scans show thinning of the cortex in children who use screens for more than 7 hours a day.",
+                    task: "1. Harm: If false, this creates unnecessary guilt/anxiety. If true, we need to know.",
+                    subtext: "Find the primary source (NIH or similar). Verify the details.",
+                    localFilename: "grade8_brain_scan.jpg"
+                },
+                {
+                    id: "8-3",
+                    title: "Copyright Hoax (FALSE)",
+                    headline: "Instagram Update: You Must Repost This Legal Notice or Meta Owns Your Photos",
+                    source: "Social-Media-Chain-Mail",
+                    time: "Viral",
+                    desc: "Influencers are sharing a 'legal block' of text claiming it protects their copyright from the new Terms of Service.",
+                    task: "1. Harm: Low physical harm, but spreads ignorance about how laws work.",
+                    subtext: "Search keywords regarding 'Instagram copyright hoax'.",
+                    localFilename: "grade8_copyright.jpg"
+                },
+                {
+                    id: "8-4",
+                    title: "Gang High Beams (FALSE)",
+                    headline: "Police Warning: If a Car Flashes High Beams at You, Do NOT Flash Back (Gang Initiation)",
+                    source: "Neighborhood-Safety-Watch",
+                    time: "Recurring",
+                    desc: "An urban legend claims that flashing your lights at a car with no lights on marks you as a target for a gang initiation killing.",
+                    task: "1. Harm: High. Causes fear of strangers and unsafe driving habits.",
+                    subtext: "Check Snopes or police fact sheets. Is this an urban legend?",
+                    localFilename: "grade8_high_beams.jpg"
+                },
+                {
+                    id: "8-5",
+                    title: "Microplastics Blood (TRUE)",
+                    headline: "Environmental Discovery: Scientists Find Microplastics in Human Blood for the First Time",
+                    source: "Global-Science-Nature",
+                    time: "Last Year",
+                    desc: "A Dutch study found plastic particles in the blood of 80% of people tested.",
+                    task: "1. Harm: Health anxiety. 2. Verify: Is this reputable science or alarmism?",
+                    subtext: "Search for the specific study (Netherlands / Vrije Universiteit).",
+                    localFilename: "grade8_microplastics.jpg"
+                }
+            ]
+        };
+
+        // --- APP LOGIC ---
+
+        let currentGrade = "6";
+        let activeScenario = null;
+
+        const viewDashboard = document.getElementById('view-dashboard');
+        const viewDetail = document.getElementById('view-detail');
+        const scenarioGrid = document.getElementById('scenario-grid');
+        const missionTitle = document.getElementById('mission-title');
+        const missionContent = document.getElementById('mission-content');
+
+        // Detail Elements
+        const detailHeadline = document.getElementById('detail-headline');
+        const detailSource = document.getElementById('detail-source');
+        const detailTime = document.getElementById('detail-time');
+        const detailDesc = document.getElementById('detail-desc');
+        const detailImage = document.getElementById('detail-image');
+        const detailTask = document.getElementById('detail-task');
+        const detailSubtext = document.getElementById('detail-subtext');
+        const detailUrlMock = document.getElementById('detail-url-mock');
+        const copyBtn = document.getElementById('copy-btn');
+        const copyReminder = document.getElementById('copy-reminder');
+        const keywordsBtn = document.getElementById('keywords-btn');
+        const keywordsModal = document.getElementById('modal-keywords');
+
+        function openModal() {
+            keywordsModal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            keywordsModal.classList.add('hidden');
+        }
+
+        function init() {
+            // Check for grade in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const gradeParam = urlParams.get('grade');
+
+            // Default to 6
+            let targetGrade = "6";
+
+            if (gradeParam && ["6", "7", "8"].includes(gradeParam)) {
+                targetGrade = gradeParam;
+
+                // Clean up URL
+                const newUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+            }
+
+            changeGrade(targetGrade);
+            lucide.createIcons();
+        }
+
+        function changeGrade(grade) {
+            currentGrade = grade;
+            
+            // Update Nav Styles
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('text-slate-300', 'hover:text-white', 'hover:bg-slate-700');
+            });
+            const activeBtn = document.getElementById(`nav-grade-${grade}`);
+            activeBtn.classList.remove('text-slate-300', 'hover:text-white', 'hover:bg-slate-700');
+            activeBtn.classList.add('bg-blue-600', 'text-white');
+
+            // Render Dashboard
+            renderDashboard();
+            showDashboard();
+        }
+
+        function renderDashboard() {
+            // 1. Render Mission Info
+            const info = gradeInfoData[currentGrade];
+            missionTitle.textContent = info.title;
+            missionContent.innerHTML = info.content;
+
+            // 2. Render Scenario Grid
+            const scenarios = scenarioData[currentGrade] || [];
+            scenarioGrid.innerHTML = '';
+
+            scenarios.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden cursor-pointer card-hover flex flex-col h-full";
+                card.onclick = () => openScenario(index);
+
+                card.innerHTML = `
+                    <div class="h-48 bg-slate-100 relative overflow-hidden">
+                         <img src="${item.localFilename}"
+                              alt="${item.title}"
+                              class="w-full h-full object-contain"
+                              onerror="this.src='https://placehold.co/600x400/e2e8f0/64748b?text=Image+N/A'">
+                         <div class="absolute bottom-2 left-2 bg-slate-900/80 text-white text-xs font-bold px-2 py-1 rounded">
+                             ${item.source}
+                         </div>
+                    </div>
+                    <div class="p-5 flex flex-col flex-grow">
+                        <h4 class="font-bold text-lg text-slate-900 leading-tight mb-2 line-clamp-2">${item.headline}</h4>
+                        <p class="text-sm text-slate-500 line-clamp-3 mb-4 flex-grow">${item.desc}</p>
+                        <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
+                             <span class="text-xs font-medium text-slate-400">ID: ${item.id}</span>
+                             <span class="text-blue-600 font-bold text-sm flex items-center gap-1 group">
+                                Investigate <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
+                             </span>
+                        </div>
+                    </div>
+                `;
+                scenarioGrid.appendChild(card);
+            });
+            
+            // Re-init icons for new content
+            lucide.createIcons();
+        }
+
+        function openScenario(index) {
+            const scenario = scenarioData[currentGrade][index];
+            activeScenario = scenario;
+
+            // Populate Detail View
+            detailHeadline.textContent = scenario.headline;
+            detailDesc.textContent = scenario.desc;
+            detailSource.textContent = scenario.source;
+            detailTime.textContent = scenario.time;
+            detailTask.textContent = scenario.task;
+            detailSubtext.textContent = scenario.subtext;
+
+            // Toggle Copy Button vs Reminder based on Grade
+            if (currentGrade === '6') {
+                copyBtn.classList.add('hidden');
+                copyReminder.classList.remove('hidden');
+                if(keywordsBtn) keywordsBtn.classList.remove('hidden');
+            } else {
+                copyBtn.classList.remove('hidden');
+                copyReminder.classList.add('hidden');
+                if(keywordsBtn) keywordsBtn.classList.add('hidden');
+            }
+
+            // Mock URL
+            const cleanSource = scenario.source.replace(/\s+/g, '-').toLowerCase();
+            detailUrlMock.textContent = `https://www.${cleanSource}/article/${scenario.id}`;
+            detailUrlMock.href = "#"; // Disable actual link
+
+            // Image
+            detailImage.src = scenario.localFilename;
+            detailImage.onerror = function() {
+                this.src = "https://placehold.co/600x400/e2e8f0/64748b?text=Image+N/A";
+            };
+
+            // Switch Views
+            viewDashboard.classList.add('hidden');
+            viewDetail.classList.remove('hidden');
+            viewDetail.classList.add('fade-in');
+
+            // Scroll to top
+            window.scrollTo(0,0);
+        }
+
+        function showDashboard() {
+            viewDetail.classList.add('hidden');
+            viewDashboard.classList.remove('hidden');
+            viewDashboard.classList.add('fade-in');
+            window.scrollTo(0,0);
+        }
+
+        // Copy functionality
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(detailHeadline.textContent).then(() => {
+                const originalHTML = copyBtn.innerHTML;
+                copyBtn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Copied!`;
+                copyBtn.classList.remove('text-slate-900', 'bg-white');
+                copyBtn.classList.add('bg-green-600', 'text-white');
+                lucide.createIcons();
+
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalHTML;
+                    copyBtn.classList.add('text-slate-900', 'bg-white');
+                    copyBtn.classList.remove('bg-green-600', 'text-white');
+                    lucide.createIcons();
+                }, 2000);
+            });
+        });
+
+        // Start
+        init();
+
+    </script>
+</body>
+</html>
